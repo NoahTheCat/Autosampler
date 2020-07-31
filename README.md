@@ -10,7 +10,7 @@ It was primarily written on the couch by a sleep deprived parent during nap-time
 If you want to improve it, please do! 
 
 ## Description
-Code for a Particle Argon/Boron, and basic design files, BOM, etc. to build the autosampler
+Code for a Particle Argon/Boron, basic design files, BOM, etc. to build the autosampler
 
 ## Installation
 
