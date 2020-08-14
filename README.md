@@ -1,6 +1,6 @@
 # Autosampler
 
-Exuipment to pump air into FlexFoil bags(or anything else). It was developed to take repeated atmospheric air samples at remote locations to study global greenhouse gas emissions.
+Equipment to pump air into FlexFoil bags(or anything else). It was developed to take repeated atmospheric air samples at remote locations to study global greenhouse gas emissions.
 
 The kit can be programmed to take air samples at pre-defined times, or can be operated remotely to fill bags on command.
 
