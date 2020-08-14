@@ -16,15 +16,15 @@ For ease of insatllation all the code is in a single file.
 This was a deliberate choice, rather than putting functions into separate files, to make installation as simple as possible for users new to coding. 
 
 ## Installation
-** add screenhots, make this better, etc. etc. **
+**add screenhots, make this better, etc. etc.**
 If you know how to use the Visual Studio desktop client you can figure it our by yourself!
 For others, here's a simple installation using the online Particle code editor.
 
--Log into your Particle code editor (build.particle.com)
--Create a new app 
--Add the libraries at the top of the file (list!)
--Replace the contents of the file that the editor creates with the code here (just copy & paste)
--upload to you microcontroller
+- Log into your Particle code editor (build.particle.com)
+- Create a new app 
+- Add the libraries at the top of the file (list!)
+- Replace the contents of the file that the editor creates with the code here (just copy & paste)
+- upload to you microcontroller
 
 
 ## Usage
