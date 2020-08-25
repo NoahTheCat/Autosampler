@@ -60,8 +60,7 @@ int pump_state = nullState;
 int enterSamplingMode(String command);
 int fillNextBag(String command);
 bool singleRemoteFill = FALSE;
-int webUpdateRepeat(String command);
-int webUpdateBegin(String command);
+int webUpdateRepeatBegin(String command);
 
 
 
@@ -160,8 +159,7 @@ void setup() {
     // register the cloud function
     Particle.function("Sampling_Mode", enterSamplingMode);
     Particle.function("Fill_Bag_Now", fillNextBag);
-    Particle.function("New_Repeat_Period", webUpdateRepeat);
-    Particle.function("New_Begin_Time", webUpdateBegin);
+    Particle.function("New_Repeat_or_Begin_Period", webUpdateRepeatBegin);
     
     
     Serial.begin(9600); // setup USB serial to computer
@@ -1065,10 +1063,44 @@ int fillNextBag(String command){
     else return -1;
 }
 
-int webUpdateRepeat(String command){
-    return 1;
+int webUpdateRepeatBegin(String command){
+    // these lines find the locations of the semicolons (;) that separate out the day;hour;minutes
+    int semicolonIndex = command.indexOf(';');
+    int secondSemicolonIndex = command.indexOf(';', semicolonIndex + 1);
+    int thirdSemicolonIndex = command.indexOf(';', secondSemicolonIndex + 1);
+    
+    if(command.substring(0, semicolonIndex) == "Update_Repeat" ){
+        // these lines pull the data out into separte strings
+        String newDayValue = command.substring(semicolonIndex + 1, secondSemicolonIndex);
+        String newHourValue = command.substring(secondSemicolonIndex + 1, thirdSemicolonIndex);
+        String newMinuteValue = command.substring(thirdSemicolonIndex + 1); // To the end of the string
+        
+        rDay = newDayValue.toInt();
+        rHour = newHourValue.toInt();
+        rMin = newMinuteValue.toInt();
+        
+        displayRepeatTime();
+        display.display();
+        return 1;
+    }
+    else if(command.substring(0, semicolonIndex) == "Update_Begin" ){
+        // these lines pull the data out into separte strings
+        String newDayValue = command.substring(semicolonIndex + 1, secondSemicolonIndex);
+        String newHourValue = command.substring(secondSemicolonIndex + 1, thirdSemicolonIndex);
+        String newMinuteValue = command.substring(thirdSemicolonIndex + 1); // To the end of the string
+        
+        bDay = newDayValue.toInt();
+        bHour = newHourValue.toInt();
+        bMin = newMinuteValue.toInt();
+        
+        displayBeginTime();
+        display.display();
+        return 2;
+    }
+    else return -1;
+    
+
+    
 }
 
-int webUpdateBegin(String command){
-    return 1;
-}
+
