@@ -1,5 +1,5 @@
 ---
-title: In-person Operation
+title: Local Operation
 ---
 
 # Using the Sampler in-person
@@ -12,12 +12,27 @@ All basic things can be done by pressing the buttons next to the LCD screen.  Wh
 
 In general:
 
-- the text on the top line is affected by pressing button A, 
+- the text on the top line is affected by pressing button A
 
 - the middle line is controlled by pressing B
 - the bottom line is controlled by pressing C
 
-## Running the Sampling Sequence
+
+
+## Setting a sampling sequence
+
+The Repeat and Begin times are set in the same way.
+
+1. Press the button for the time you want to change - e.g. A for the Repeat time.  The screen will now show REPEAT.
+2. Press C to cycle through the units, days, hours, minutes.  The selected unit will become a capital letter.
+3. Press the row's button to change the time.  e.g. if you're changing the Repeat time and have highlighted H, press A to change the number of hours.  Continue pressing the button to get the correct value.  The time will rest to zero after:
+   - Days: 12
+   - Hours: 23
+   - Minutes: 55
+
+
+
+## Running a sampling sequence
 
 ### Starting the Sampler
 
@@ -31,7 +46,7 @@ When the countdown timer reaches zero a bag will fill and the screen will displa
 
 <img src="img/Filling_Screen.png" width="600" />
 
-### Stopping the Sampler
+### Stopping the sampler
 
 The sampling sequence can be stopped at any time by pressing button C five (5) times fast. 
 

@@ -14,6 +14,12 @@
 //Threading needed for RTC operation
 SYSTEM_THREAD(ENABLED);
 
+// Put Particle into semi-automatic mode - i.e. it wont try to connect to Wifi
+// until you tell it to - easier to use if no local WiFi
+SYSTEM_MODE(SEMI_AUTOMATIC);
+boolean connectToCloud = false;     // flag to say the "connect" switch has been pressed
+
+
 
 // Import the display code and instantiate with the keyword display
 OledWingAdafruit display;
@@ -143,6 +149,11 @@ Adafruit_MCP23017 mcp;
 
 void setup() {
     
+    //Set the input pins for the switches
+    pinMode(D7, INPUT_PULLDOWN);    // sets pin D7 as input with a default pulldown to GND
+    attachInterrupt(D7, connect, RISING);  // Connect to WiFi+Cloud inturrupt - Pulse D7 to GND to trigger the connect function.
+    
+    
     //Particle.variable("Fill every_X_days", rDay);
     //Particle.variable("Fill every_X_hours", rHour);
     //Particle.variable("Fill every_X_minutes", rMin);
@@ -213,6 +224,8 @@ switch (fsm_state) {
   
     case nullState: // statements to run in nullState mode
         
+        connectToCloudCheck(); //check if we should connect to Cloud
+        
         if (enteringCase == TRUE){  //check if anything has changed and we need to update the display 
             nullDisplay();
             display.display();
@@ -269,6 +282,8 @@ switch (fsm_state) {
         break;
   
     case Repeat:                                  //statements to run every time you're in Repeat mode
+        
+        connectToCloudCheck(); //check if we should connect to Cloud
         
         if (enteringCase == TRUE){  //check if anything has changed and we need to update the display 
             nullDisplay();
@@ -329,6 +344,9 @@ switch (fsm_state) {
     break;
     
     case Begin:
+    
+        connectToCloudCheck(); //check if we should connect to Cloud
+        
         if (enteringCase == TRUE){  //check if anything has changed and we need to update the display 
             nullDisplay();
             displayBeginHighlight();                   //make BEGIN all caps
@@ -457,6 +475,8 @@ switch (fsm_state) {
         // update the countdown every second if close to next fill and 10 sec when a long time from next fill
         //if(untilNextFillDay==0 & untilNextFillHour==0 & untilNextFillMinute<10) {
         if(untilNextFillTime<600) {  // if less than 10 minutes 10*60sec=600sec
+            
+            connectToCloudCheck(); //check if we should connect to Cloud - this is here so you have time to resest the device if something goes wrong
             
             if(currentMillis - previousMillis > 1000) {     //once a second
                 previousMillis = currentMillis; //reset the timer
@@ -624,27 +644,41 @@ switch (fsm_state) {
 
 
 
-//******************************************************
-//------------------------------------------------------
-//******************************************************
-//------------------------------------------------------
+//************************************************************************************************************
+//------------------------------------------------------------------------------------------------------------
+//************************************************************************************************************
+//------------------------------------------------------------------------------------------------------------
 
 // FUNCTIONS
 
+//------------------------------------------------------------------------------------------------------------
+//************************************************************************************************************
+//------------------------------------------------------------------------------------------------------------
+//************************************************************************************************************
+
+
 //------------------------------------------------------
-//******************************************************
+// Debug Function
 //------------------------------------------------------
-//******************************************************
+int Aargh(){
+    display.clearDisplay();
+    display.setCursor(0,11);               //sets the cursor position
+    display.print("HOW AM I HERE???");
+    display.display();
+}
+
+
+//============================================================================================================================================
+//============================================================================================================================================
+// Display Functions
+//============================================================================================================================================
+//============================================================================================================================================
 
 
 
-
-
-
-
-
-
-
+//------------------------------------------------------
+// Set the display splashscreen
+//------------------------------------------------------
 
 int splashScreen(){
     
@@ -653,12 +687,15 @@ int splashScreen(){
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.setCursor(0,31);
-    display.print("TPLabs");
+    display.print("Noah");
     display.display();
     display.setFont();
     delay(2000);
 }
 
+//------------------------------------------------------
+// This function displays the null items
+//------------------------------------------------------
 int nullDisplay(){
     display.clearDisplay();
     
@@ -675,14 +712,10 @@ int nullDisplay(){
     //display.display(); // actually display all of the above
 }
 
-int Aargh(){
-    display.clearDisplay();
-    
-    display.setCursor(0,11);               //sets the cursor position
-    display.print("HOW AM I HERE???");
-    display.display();
-}
 
+//------------------------------------------------------
+// This function highlights REPEAT
+//------------------------------------------------------
 int displayRepeatHighlight(){
     display.setCursor(0,0);                      //sets the cursor position
     display.fillRect(0,0, 35, 10, 0);  //erase "Repeat"
@@ -693,6 +726,9 @@ int displayRepeatHighlight(){
     //display.display();
 }
 
+//------------------------------------------------------
+// This function highlights BEGIN
+//------------------------------------------------------
 int displayBeginHighlight(){
     display.setCursor(0,0);                      //sets the cursor position
     display.fillRect(0,0, 35, 10, 0);  //erase "REPEAT"
@@ -703,7 +739,9 @@ int displayBeginHighlight(){
     //display.display();
 }
 
-
+//------------------------------------------------------
+// this function makes the currently selected unit (m/h/d) a capital letter (M/H/D)
+//------------------------------------------------------
 int highlightUnit(int unitSelect){
     /* this function makes the currently selected unit (m/h/d) a capital letter (M/H/D)*/
   int y_val = 0;                        //chose the correct row to update
@@ -745,6 +783,9 @@ int highlightUnit(int unitSelect){
   }
 }
 
+//------------------------------------------------------
+// This function resets all timer displays to the defaults
+//------------------------------------------------------
 int resetAllUnits(int y_val){
     /*This function resets all timer displays to the defaults*/
   if (fsm_state == Repeat) y_val=0;
@@ -763,6 +804,9 @@ int resetAllUnits(int y_val){
   display.print("m");
 }
 
+//------------------------------------------------------
+// This function displays the current REPEAT time
+//------------------------------------------------------
 int displayRepeatTime(){
     //Erase the current values
     display.fillRect(48,0, 12,8, 0); //erase d/D value
@@ -780,6 +824,9 @@ int displayRepeatTime(){
     
 }
 
+//------------------------------------------------------
+// This function displays the current BEGIN time
+//------------------------------------------------------
 int displayBeginTime(){
     //Erase the current values
     display.fillRect(48,11, 12,8, 0); //erase d/D value
@@ -797,6 +844,9 @@ int displayBeginTime(){
     
 }
 
+//------------------------------------------------------
+// This function updates the current REPEAT time
+//------------------------------------------------------
 int updateRepeatTime(){
     if (unitSelectR == 0) rDay++;
     if (rDay > 10) rDay=0;
@@ -808,6 +858,9 @@ int updateRepeatTime(){
     if (rMin > 60) rMin=0;
 }
 
+//------------------------------------------------------
+// This function updates the current BEGIN time
+//------------------------------------------------------
 int updateBeginTime(){
     if (unitSelectB == 0) bDay++;
     if (bDay > 10) bDay=0;
@@ -819,6 +872,9 @@ int updateBeginTime(){
     if (bMin > 60) bMin=0;
 }
 
+//------------------------------------------------------
+//
+//------------------------------------------------------
 int displayUntilNextFillTimeLong(){
     
     if (pump_state == nullState){
@@ -859,6 +915,9 @@ int displayUntilNextFillTimeLong(){
     
 }
 
+//------------------------------------------------------
+//
+//------------------------------------------------------
 int displayUntilNextFillTimeShort(){
     
     if (pump_state == nullState){
@@ -896,12 +955,16 @@ int displayUntilNextFillTimeShort(){
     display.print(" s");
 }
 
-//------------------------------------------------------
-// Relay Functions
-//------------------------------------------------------
-//
 
+//============================================================================================================================================
+//============================================================================================================================================
+// Relay Functions
+//============================================================================================================================================
+//============================================================================================================================================
+
+//------------------------------------------------------
 //This function initialises all DIO to outputs
+//------------------------------------------------------
 void init_relay(){
     
     for (int i=0; i<=16; i++){
@@ -909,7 +972,9 @@ void init_relay(){
     }
 }
 
+//------------------------------------------------------
 //This function turns all the relays OFF
+//------------------------------------------------------
 void relay_all_LOW(){
     
     for (int i=0; i<=16; i++){
@@ -917,8 +982,9 @@ void relay_all_LOW(){
     }
 }
 
+//------------------------------------------------------------
 // This function is a wrapper to re-number the relays to sensible values 
-//
+//------------------------------------------------------------
 
 void relay_control(unsigned int channel, unsigned char mode){   
 
@@ -942,6 +1008,9 @@ void relay_control(unsigned int channel, unsigned char mode){
      mcp.digitalWrite(channel, mode);
   
 }
+
+//------------------------------------------------------------
+//------------------------------------------------------------
 
 void fillBagIfConditionsMet(){
     //if we have the command to fill a bag, AND we have time, AND we have empty bags. THEN start.
@@ -1029,13 +1098,37 @@ void fillBagIfConditionsMet(){
 
 
 
-//------------------------------------------------------
+//============================================================================================================================================
+//============================================================================================================================================
 // Web Functions
-//------------------------------------------------------
-//
+//============================================================================================================================================
+//============================================================================================================================================
 
 
-// this function automagically gets called upon a matching POST request
+//------------------------------------------------------------
+//function called by the "Connect to wifi" inturrupt, sets correct flag
+//------------------------------------------------------------
+void connect() {
+    connectToCloud = true;
+}
+
+//------------------------------------------------------------
+// This function checks if the Connect to Cloud switch interrupt has been triggered and connects to the cloud if it has 
+//------------------------------------------------------------
+void connectToCloudCheck(){
+    if(connectToCloud == true && Particle.connected() == false) {
+         Particle.connect();
+         Serial.println("Connected to cloud");
+     }
+}
+
+
+
+//------------------------------------------------------------
+// Web function to Start/Stop the sampling mode
+// automagically gets called upon a matching POST request 
+// e.g. if you press the button on the matching function on the console
+//------------------------------------------------------------
 int enterSamplingMode(String command)
 {
   // look for the matching argument "Start" <-- max of 64 characters long
@@ -1053,6 +1146,11 @@ int enterSamplingMode(String command)
   else return -1;
 }
 
+//------------------------------------------------------------
+// Web function to take a single sample
+// automagically gets called upon a matching POST request 
+// e.g. if you press the button on the matching function on the console
+//------------------------------------------------------------
 int fillNextBag(String command){
     if(command == "Fill_Bag_Now") {
         singleRemoteFill = TRUE;
@@ -1063,6 +1161,11 @@ int fillNextBag(String command){
     else return -1;
 }
 
+//------------------------------------------------------------
+// Web function to update the BEGIN and REPEAT times
+// automagically gets called upon a matching POST request 
+// e.g. if you press the button on the matching function on the console
+//------------------------------------------------------------
 int webUpdateRepeatBegin(String command){
     // these lines find the locations of the semicolons (;) that separate out the day;hour;minutes
     int semicolonIndex = command.indexOf(';');
