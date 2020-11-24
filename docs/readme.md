@@ -1,7 +1,14 @@
-# Readme
+---
+title: Introduction
+nav_order: 1
+---
 
-why is this not working anymore?
+# Automatic air sampler
 
-<img src="img/test4.png" alt="FPGA Functional block diagram" width="150" />
+Instructions for air sampler
 
-![](img/test4.png)
+
+
+Kit to fill tedlar bags with ambient air samples at regular intervals.
+
+Totally offline, or use the internet to program from afar.

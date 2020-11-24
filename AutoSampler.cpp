@@ -19,8 +19,6 @@ SYSTEM_THREAD(ENABLED);
 SYSTEM_MODE(SEMI_AUTOMATIC);
 boolean connectToCloud = false;     // flag to say the "connect" switch has been pressed
 
-
-
 // Import the display code and instantiate with the keyword display
 OledWingAdafruit display;
 
@@ -39,11 +37,16 @@ SdCardPrintHandler printToCard(sd, SD_CHIP_SELECT, SPI_FULL_SPEED);
 
 size_t counter = 0;
 
+//------------------------------------------------------
+// PUMP TIMINGS
+//------------------------------------------------------
 
+int flushTime = 10000;          // time to flush the lines in ms, i.e. 1000 = 10s
+int fillTime = 60000;           // time to fill the bag in ms, i.e. 60000 = 60s
 
 
 //------------------------------------------------------
-// Variables
+// All other variables
 //------------------------------------------------------
 
 //Define the states of the Main machine
@@ -51,6 +54,7 @@ size_t counter = 0;
 #define Repeat 1
 #define Begin 2
 #define Sampling 3
+#define Full 4
 int fsm_state = nullState;  // initialise in null
 String fsm_state_name;
 
@@ -96,7 +100,9 @@ int bHour = 0;
 int bMin = 2;
 
 //Bag filling variables
-int bagToFill = 1;
+//uint8_t bagToFill = 1;
+uint8_t bagToFill = EEPROM.read(0); //read the value from the first EEPROM byte. This will be 255 if a reset is needed
+boolean resetBagNumber = false;     // flag to say the "reset bag number" switch has been pressed
 int numOfBags = 12;
 
 //Countdown Timer timing variables
@@ -124,8 +130,7 @@ int untilNextFillSecond = 0;
 int pumpTimer = 0;
 bool flushBool = FALSE;
 bool startFillingBag = FALSE;
-int flushTime = 10000;          // time to flush the lines in ms, i.e. 1000 = 10s
-int fillTime = 60000;           // time to fill the bag in ms, i.e. 60000 = 60s
+
 
 //------------------------------------------------------
 // Relay setup and variables
@@ -151,7 +156,10 @@ void setup() {
     
     //Set the input pins for the switches
     pinMode(D7, INPUT_PULLDOWN);    // sets pin D7 as input with a default pulldown to GND
-    attachInterrupt(D7, connect, RISING);  // Connect to WiFi+Cloud inturrupt - Pulse D7 to GND to trigger the connect function.
+    attachInterrupt(D7, connect, RISING);  // Connect to WiFi+Cloud inturrupt - Pulse D7 to 3.3V to trigger the connect function.
+    
+    pinMode(D6, INPUT_PULLDOWN);    // sets pin D6 as input with a default pulldown to GND
+    attachInterrupt(D6, resetBag, RISING);  // Reset bag number inturrupt - Pulse D6 to 3.3V to trigger the connect function.
     
     
     //Particle.variable("Fill every_X_days", rDay);
@@ -227,6 +235,31 @@ switch (fsm_state) {
         connectToCloudCheck(); //check if we should connect to Cloud
         
         if (enteringCase == TRUE){  //check if anything has changed and we need to update the display 
+            
+            if(bagToFill > numOfBags){
+                display.clearDisplay();
+                display.setFont(&FreeSansBoldOblique18pt7b);
+                display.setTextSize(1);
+                display.setTextColor(WHITE);
+                display.setCursor(0,31);
+                display.print("FULL");
+                display.display();
+                display.setFont();
+                delay(1000);
+            }
+            else if(bagToFill < numOfBags){
+                display.clearDisplay();
+                display.setFont(&FreeSansBoldOblique18pt7b);
+                display.setTextSize(1);
+                display.setTextColor(WHITE);
+                display.setCursor(0,31);
+                display.print("BAG ");
+                display.print(bagToFill);
+                display.display();
+                display.setFont();
+                delay(1000);
+            }
+            
             nullDisplay();
             display.display();
             //Aargh();
@@ -417,6 +450,8 @@ switch (fsm_state) {
  
         
         if (enteringCase == TRUE){  //check if anything has changed and we need to update the display 
+            resetBagNumberCheck();
+            
             display.clearDisplay();
             
             display.setCursor(0,0);
@@ -444,20 +479,38 @@ switch (fsm_state) {
             //nextFillHour   = Time.hour(now)   + bHour;
             //nextFillMinute = Time.minute(now) + bMin; 
             //nextFillSecond = Time.second(now);
-            nextFillTime = now + 86400*bDay + 3600*bHour + 60*bMin;
+            
+            ////////nextFillTime = now + 86400*bDay + 3600*bHour + 60*bMin;
             
             //untilNextFillDay    = nextFillDay    - Time.day(now);
             //untilNextFillHour   = nextFillHour   - Time.hour(now);
             //untilNextFillMinute = nextFillMinute - Time.minute(now);
             //untilNextFillSecond = nextFillSecond - Time.second(now);
+            
+            if(bDay == 0 && bHour == 0 && bMin == 0){    //if the bag fill is due NOW
+                if (bagToFill <= numOfBags) startFillingBag = TRUE; // set the flag to fill a bag if we have free bags
+                nextFillTime = Time.now() + 86400*rDay + 3600*rHour + 60*rMin;  //set the next fill time
+                //untilNextFillTime = nextFillTime - Time.now();      //calculate the time in sec until the next bag fill
+                //fillBagIfConditionsMet();
+            }
+            else{
+                nextFillTime = now + 86400*bDay + 3600*bHour + 60*bMin;
+            }
+            
             untilNextFillTime = nextFillTime - Time.now();
             untilNextFillSecond = (untilNextFillTime % 60);
             untilNextFillMinute = (untilNextFillTime % 3600) /60;
             untilNextFillHour   = (untilNextFillTime % 86400) /3600;
             untilNextFillDay    = untilNextFillTime / 86400;
             displayUntilNextFillTimeLong();
+            
+            //------------------------------------------------------
+            // Checks to see if we sould fill a bag ASAP
             //------------------------------------------------------
             
+            //------------------------------------------------------
+
+
             display.setCursor(0,22);
             display.print("Cancel = x5 fast"); 
             display.display();      //update the display 
@@ -465,6 +518,19 @@ switch (fsm_state) {
             enteringCase = FALSE;  //reset the flag to say "no need to update"
         }
         
+        //------------------------------------------------------
+        // Interrupt checkers
+        //------------------------------------------------------
+        
+        resetBagNumberCheck();
+        
+        // I'VE REMOVED THIS ABILITY TO CONNECT TO THE C
+        // if more than 10 minutes until next fill 10*60sec=600sec
+        //check if we should connect to Cloud - this is here so you have time to resest the device if something goes wrong
+        //if(untilNextFillTime>600) {  
+        //    connectToCloudCheck(); 
+        //}
+
         
         //------------------------------------------------------
         // Countdown Timers to display the time til next fill
@@ -476,16 +542,15 @@ switch (fsm_state) {
         //if(untilNextFillDay==0 & untilNextFillHour==0 & untilNextFillMinute<10) {
         if(untilNextFillTime<600) {  // if less than 10 minutes 10*60sec=600sec
             
-            connectToCloudCheck(); //check if we should connect to Cloud - this is here so you have time to resest the device if something goes wrong
-            
             if(currentMillis - previousMillis > 1000) {     //once a second
                 previousMillis = currentMillis; //reset the timer
                 
-                untilNextFillTime = nextFillTime - Time.now();      //calculate the time in sec unitl the next bag fill
+                untilNextFillTime = nextFillTime - Time.now();      //calculate the time in sec until the next bag fill
                 
                 if(untilNextFillTime <=0){    //if the bag fill is due
-                    startFillingBag = TRUE;
-                    nextFillTime = Time.now() + 86400*bDay + 3600*bHour + 60*bMin;
+                    if (bagToFill <= numOfBags) startFillingBag = TRUE; // set the flag to fill a bag if we have free bags
+                    //startFillingBag = TRUE;   
+                    nextFillTime = Time.now() + 86400*rDay + 3600*rHour + 60*rMin;  //set the next fill time
                     
                 }
                 else{
@@ -633,6 +698,7 @@ switch (fsm_state) {
         }    
         */
     break;
+    
 }
 
 }
@@ -644,40 +710,21 @@ switch (fsm_state) {
 
 
 
-//************************************************************************************************************
-//------------------------------------------------------------------------------------------------------------
-//************************************************************************************************************
-//------------------------------------------------------------------------------------------------------------
+//******************************************************
+//------------------------------------------------------
+//******************************************************
+//------------------------------------------------------
 
 // FUNCTIONS
 
-//------------------------------------------------------------------------------------------------------------
-//************************************************************************************************************
-//------------------------------------------------------------------------------------------------------------
-//************************************************************************************************************
+//------------------------------------------------------
+//******************************************************
+//------------------------------------------------------
+//******************************************************
 
 
 //------------------------------------------------------
-// Debug Function
-//------------------------------------------------------
-int Aargh(){
-    display.clearDisplay();
-    display.setCursor(0,11);               //sets the cursor position
-    display.print("HOW AM I HERE???");
-    display.display();
-}
-
-
-//============================================================================================================================================
-//============================================================================================================================================
-// Display Functions
-//============================================================================================================================================
-//============================================================================================================================================
-
-
-
-//------------------------------------------------------
-// Set the display splashscreen
+//
 //------------------------------------------------------
 
 int splashScreen(){
@@ -687,14 +734,14 @@ int splashScreen(){
     display.setTextSize(1);
     display.setTextColor(WHITE);
     display.setCursor(0,31);
-    display.print("Noah");
+    display.print("Hello");
     display.display();
     display.setFont();
     delay(2000);
 }
 
 //------------------------------------------------------
-// This function displays the null items
+//
 //------------------------------------------------------
 int nullDisplay(){
     display.clearDisplay();
@@ -712,9 +759,19 @@ int nullDisplay(){
     //display.display(); // actually display all of the above
 }
 
+//------------------------------------------------------
+//
+//------------------------------------------------------
+int Aargh(){
+    display.clearDisplay();
+    
+    display.setCursor(0,11);               //sets the cursor position
+    display.print("HOW AM I HERE???");
+    display.display();
+}
 
 //------------------------------------------------------
-// This function highlights REPEAT
+//
 //------------------------------------------------------
 int displayRepeatHighlight(){
     display.setCursor(0,0);                      //sets the cursor position
@@ -727,7 +784,7 @@ int displayRepeatHighlight(){
 }
 
 //------------------------------------------------------
-// This function highlights BEGIN
+//
 //------------------------------------------------------
 int displayBeginHighlight(){
     display.setCursor(0,0);                      //sets the cursor position
@@ -740,7 +797,7 @@ int displayBeginHighlight(){
 }
 
 //------------------------------------------------------
-// this function makes the currently selected unit (m/h/d) a capital letter (M/H/D)
+//
 //------------------------------------------------------
 int highlightUnit(int unitSelect){
     /* this function makes the currently selected unit (m/h/d) a capital letter (M/H/D)*/
@@ -784,7 +841,7 @@ int highlightUnit(int unitSelect){
 }
 
 //------------------------------------------------------
-// This function resets all timer displays to the defaults
+//
 //------------------------------------------------------
 int resetAllUnits(int y_val){
     /*This function resets all timer displays to the defaults*/
@@ -805,7 +862,7 @@ int resetAllUnits(int y_val){
 }
 
 //------------------------------------------------------
-// This function displays the current REPEAT time
+//
 //------------------------------------------------------
 int displayRepeatTime(){
     //Erase the current values
@@ -825,7 +882,7 @@ int displayRepeatTime(){
 }
 
 //------------------------------------------------------
-// This function displays the current BEGIN time
+//
 //------------------------------------------------------
 int displayBeginTime(){
     //Erase the current values
@@ -845,7 +902,7 @@ int displayBeginTime(){
 }
 
 //------------------------------------------------------
-// This function updates the current REPEAT time
+//
 //------------------------------------------------------
 int updateRepeatTime(){
     if (unitSelectR == 0) rDay++;
@@ -859,7 +916,7 @@ int updateRepeatTime(){
 }
 
 //------------------------------------------------------
-// This function updates the current BEGIN time
+//
 //------------------------------------------------------
 int updateBeginTime(){
     if (unitSelectB == 0) bDay++;
@@ -956,11 +1013,11 @@ int displayUntilNextFillTimeShort(){
 }
 
 
-//============================================================================================================================================
-//============================================================================================================================================
+//======================================================================
+//======================================================================
 // Relay Functions
-//============================================================================================================================================
-//============================================================================================================================================
+//======================================================================
+//======================================================================
 
 //------------------------------------------------------
 //This function initialises all DIO to outputs
@@ -1014,7 +1071,7 @@ void relay_control(unsigned int channel, unsigned char mode){
 
 void fillBagIfConditionsMet(){
     //if we have the command to fill a bag, AND we have time, AND we have empty bags. THEN start.
-        if(startFillingBag == TRUE && untilNextFillTime >100 && (bagToFill <= numOfBags) ) pump_state = startFlush;
+        if(startFillingBag == TRUE && untilNextFillTime > (flushTime/1000 + fillTime/1000 + 10) && (bagToFill <= numOfBags) ) pump_state = startFlush;
         
         switch (pump_state) {
         
@@ -1065,6 +1122,8 @@ void fillBagIfConditionsMet(){
                     //need to use (bagToFill-1) in the next case
                     bagToFill++; 
                     
+                    EEPROM.write(0, bagToFill);
+                    
                     pumpTimer = millis();       //reset timer
                     pump_state = fillingBag;     //move to the next state
                 }
@@ -1098,29 +1157,11 @@ void fillBagIfConditionsMet(){
 
 
 
-//============================================================================================================================================
-//============================================================================================================================================
+//======================================================================
+//======================================================================
 // Web Functions
-//============================================================================================================================================
-//============================================================================================================================================
-
-
-//------------------------------------------------------------
-//function called by the "Connect to wifi" inturrupt, sets correct flag
-//------------------------------------------------------------
-void connect() {
-    connectToCloud = true;
-}
-
-//------------------------------------------------------------
-// This function checks if the Connect to Cloud switch interrupt has been triggered and connects to the cloud if it has 
-//------------------------------------------------------------
-void connectToCloudCheck(){
-    if(connectToCloud == true && Particle.connected() == false) {
-         Particle.connect();
-         Serial.println("Connected to cloud");
-     }
-}
+//======================================================================
+//======================================================================
 
 
 
@@ -1202,8 +1243,73 @@ int webUpdateRepeatBegin(String command){
     }
     else return -1;
     
-
-    
 }
+
+//======================================================================
+//======================================================================
+// Inturrupt Functions
+//======================================================================
+//======================================================================
+
+//------------------------------------------------------------
+//function called by the "Connect to wifi" inturrupt, sets correct flag
+//------------------------------------------------------------
+void connect() {
+    connectToCloud = true;
+}
+
+//------------------------------------------------------------
+//function called by the "Reset Bag Number" inturrupt. Resets & displays message
+//------------------------------------------------------------
+void resetBag() {
+    resetBagNumber = true;
+}
+
+//------------------------------------------------------------
+// This function checks if the Connect to Cloud switch interrupt has been triggered and connects to the cloud if it has 
+//------------------------------------------------------------
+void connectToCloudCheck(){
+    if(connectToCloud == true && Particle.connected() == false) {
+         
+         Particle.connect();
+         Serial.println("Connected to cloud");
+         connectToCloud = false;  // reset flag
+         
+         /*
+         I think there's a bug here when the RTC and Clund time dont match the untilNextFillTime gets a random number
+         we need to update the untilNextFillTime to use the new Time.now()
+         e.g. we could calculate untilNextFillTime = nextFillTime - Time.now(); before and after the Particle.connect()
+         and update the nextFillTime after the connect to make them match?
+         
+         ...but if Particle.connect() isn't blocking how do we time this...
+         
+         Let's leave this a bug for now and say "Only connecto to cloud when NOT sampling" 
+         
+         
+         //update the time for the next bag fill with the new Cloud time.
+         
+         rtcSync.loop();     //sets the RTC from the cloud if the time is missing.
+         
+         
+         untilNextFillTime = nextFillTime - Time.now(); 
+         
+         */
+         
+     }
+}
+
+//------------------------------------------------------------
+// This function checks if the Reset Bag Number switch interrupt has been triggered and resets and displays a message if it has
+//------------------------------------------------------------
+void resetBagNumberCheck(){
+    if(resetBagNumber == true) {
+        bagToFill = 1;
+        EEPROM.write(0, bagToFill); //write the reset bag number to the EEPROM address 0
+        resetBagNumber = false; // reset flag
+        
+    }
+            
+}
+
 
 

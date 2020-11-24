@@ -1,5 +1,6 @@
 ---
 title: Local Operation
+nav_order: 3
 ---
 
 # Using the Sampler in-person
@@ -12,10 +13,10 @@ All basic things can be done by pressing the buttons next to the LCD screen.  Wh
 
 In general:
 
-- the text on the top line is affected by pressing button A
+- the text on the top line is affected by pressing button `A`
 
-- the middle line is controlled by pressing B
-- the bottom line is controlled by pressing C
+- the middle line is controlled by pressing `B`
+- the bottom line is controlled by pressing `C`
 
 
 
@@ -23,12 +24,23 @@ In general:
 
 The Repeat and Begin times are set in the same way.
 
-1. Press the button for the time you want to change - e.g. A for the Repeat time.  The screen will now show REPEAT.
-2. Press C to cycle through the units, days, hours, minutes.  The selected unit will become a capital letter.
-3. Press the row's button to change the time.  e.g. if you're changing the Repeat time and have highlighted H, press A to change the number of hours.  Continue pressing the button to get the correct value.  The time will rest to zero after:
-   - Days: 12
-   - Hours: 23
-   - Minutes: 55
+1. Press the button for the time you want to change - e.g. `A` for the Repeat time.  The screen will now show REPEAT.
+
+2. Press `C` to cycle through the units, days, hours, minutes.  The selected unit will become a capital letter.
+
+3. Press the row's button to change the time.  e.g. if you're changing the Repeat time and have highlighted H, press `A` to change the number of hours.  Continue pressing the button to get the correct value.  The time will rest to zero after reaching the limit.
+
+   | Unit   | Increment |  Limit   |
+   | :----- | :-------: | :------: |
+   | Day    |   1 day   | 10 days  |
+   | Hour   |  1 hour   | 24 hours |
+   | Minute |  5 mins   | 60 mins  |
+
+
+
+**insert photo of unit editing**
+
+
 
 
 
@@ -36,7 +48,7 @@ The Repeat and Begin times are set in the same way.
 
 ### Starting the Sampler
 
-If you are happy with the Repeat and Begin times and want to start the sampler press C five times fast. The screen should now look like this:
+If you are happy with the Repeat and Begin times and want to start the sampler press `C` five times fast. The screen should now look like this:
 
 <img src="img/Sampling_Screen.png" width="600" />
 
@@ -48,6 +60,6 @@ When the countdown timer reaches zero a bag will fill and the screen will displa
 
 ### Stopping the sampler
 
-The sampling sequence can be stopped at any time by pressing button C five (5) times fast. 
+The sampling sequence can be stopped at any time by pressing button `C` five (5) times fast. 
 
-The screen will then revert to the default one above
+The screen will then revert to the default one at the top of this page.
