@@ -21,7 +21,7 @@ By default the sampler is normally DISCONNECTED from the internet, and the main 
 
 To connect the sampler to the internet flick the switch under the battery to the ON position, then immediately back to OFF, the small LED near the USB connector should light up blue. 
 
-<img src="img/connectToCloudSwitch.png" width="450"/>
+<img src="img/ConnectToCloudSwitch.png" width="450"/>
 
 At the next safe moment the sampler will try to connect to the internet.  The main LED will flash green while connecting to the local WiFi and then cyan when connecting to the device cloud.  When it has connected properly the main LED will slowly pulse cyan - it's like a very slow heartbeat.
 
@@ -38,9 +38,13 @@ The Sampler exposes several variables to the cloud using the Particle.variable()
 # Particle Console
 
 If you open the particle console of the Autosampler you should see this: 
+
 <img src="img/ParticleConsole.png" width="800:" />
 
-On the right hand side there is a list of the `Functions` that you can perform, and below them the `Variables` that you can read.  If you can't see them.
+On the right hand side there is a list of the `Functions` that you can perform, and below them the `Variables` that you can read. 
+
+ If you can't see them:
+
 1. Make sure that you're on the console for the right piece of equipment by checking the device name
 2. Refresh the `Functions` or `Variables` list by clicking on the little looped-arrow symbol to the right of the title.
 
@@ -66,7 +70,7 @@ This viable returns a date/time. The exact meaning depends on the mode (but is b
 <img src="img/IfSampling.png" width="400:" />
 
 ### Next_bag_to_fill
-This variable returns the number of the next bag that will be filled.  The current hardware design only has a max of 12 bags, so if this number is bigger than 12 the timer will just keep counting but the pump will not turn on.
+This variable returns the number of the next bag that will be filled.  The current hardware design only has a max of 12 bags, so once this number is bigger than 12 the timer will just keep counting but the pump will not turn on.
 
 <img src="img/NextBagToFill.png" width="400:" />
 
