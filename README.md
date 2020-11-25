@@ -8,7 +8,7 @@ The kit can be programmed to take air samples at pre-defined times, or can be op
 I'm sorry.  
 The code in this repo is hideous. 
 It was primarily written on the couch by a sleep deprived parent during nap-time.  
-If you want to improve it, please do! 
+If you want to improve it, please do.
 
 ## Description
 Code for a Particle Argon/Boron, basic design files, BOM, etc. to build the autosampler
@@ -18,17 +18,19 @@ This was a deliberate choice, rather than putting functions into separate files,
 
 ## Installation
 **add screenhots, make this better, etc. etc.**
-If you know how to use the Visual Studio desktop client you can figure it our by yourself!
+If you know how to use the Visual Studio desktop client you can figure it our by yourself.
+
 For others, here's a simple installation using the online Particle code editor.
 
 - Log into your Particle code editor (build.particle.com)
 - Create a new app 
-- Add the libraries at the top of the file (list!)
+- Add the libraries at the top of the file ()
 - Replace the contents of the file that the editor creates with the code here (just copy & paste)
 - upload to you microcontroller
 
 
 ## Usage
+See [here]()
 
 ## License
 MIT Licence - use this however you like
