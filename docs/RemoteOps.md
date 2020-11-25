@@ -1,5 +1,5 @@
 ---
-title: Remote Operation
+title: Online Sampling
 nav_order: 4
 ---
 
@@ -19,9 +19,13 @@ For instructions on how to set tp the WiFi connection see: **LINK**
 
 By default the sampler is normally DISCONNECTED from the internet, and the main LED should be pulsing white (it's a RGB LED so you can still see the other colors a bit).
 
-To connect the sampler to the internet press the Connect to Internet switch, the small LED near the USB connector should light up blue. At the next safe moment the sampler will try to connect to the internet.  The main LED will flash green while connecting to the local WiFi and then cyan when connecting to the device cloud.  When it has connected properly the main LED will slowly pulse cyan - it's like a very slow heartbeat.
+To connect the sampler to the internet flick the switch under the battery to the ON position, then immediately back to OFF, the small LED near the USB connector should light up blue. 
 
-**NOTE:** The sampler will NOT try to connect to the internet if it is mid sequence.  To go online, stop the sampling sequence, push the switch, and then re-start the sequence once connected.
+**Photo**
+
+At the next safe moment the sampler will try to connect to the internet.  The main LED will flash green while connecting to the local WiFi and then cyan when connecting to the device cloud.  When it has connected properly the main LED will slowly pulse cyan - it's like a very slow heartbeat.
+
+**NOTE:** The sampler will NOT try to connect to the internet if it is mid sequence.  To go online, stop the sampling sequence, push the switch, and then re-start the sequence once online.
 
 
 

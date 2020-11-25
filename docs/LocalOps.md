@@ -1,5 +1,5 @@
 ---
-title: Local Operation
+title: Offline Sampling
 nav_order: 3
 ---
 
@@ -63,3 +63,17 @@ When the countdown timer reaches zero a bag will fill and the screen will displa
 The sampling sequence can be stopped at any time by pressing button `C` five (5) times fast. 
 
 The screen will then revert to the default one at the top of this page.
+
+
+
+# Resetting the Bag Counter
+
+The sampler can only activate the valve for each bag once.  This means that once the sampler's counter gets to 12 (the max number of bags) it will stop.
+
+Once someone has put new sample bags in place the counter can be reset using the switch underneat the connector to the relays for the valves::
+
+
+
+Flick the switch to the ON position, then immediately back to OFF and the bag counter will reset to 1.
+
+This switch will be replaced with a button with a guard in a later hardware version.
