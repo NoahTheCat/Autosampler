@@ -21,6 +21,8 @@ By default the sampler is normally DISCONNECTED from the internet, and the main 
 
 To connect the sampler to the internet flick the switch under the battery to the ON position, then immediately back to OFF, the small LED near the USB connector should light up blue. 
 
+<img src="img/connectToCloudSwitch.png" width="450"/>
+
 At the next safe moment the sampler will try to connect to the internet.  The main LED will flash green while connecting to the local WiFi and then cyan when connecting to the device cloud.  When it has connected properly the main LED will slowly pulse cyan - it's like a very slow heartbeat.
 
 <img src="img/ConnectToCloud.gif" width="350:" />

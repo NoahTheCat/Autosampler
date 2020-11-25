@@ -101,7 +101,8 @@ int bMin = 2;
 
 //Bag filling variables
 //uint8_t bagToFill = 1;
-uint8_t bagToFill = EEPROM.read(0); //read the value from the first EEPROM byte. This will be 255 if a reset is needed
+//uint8_t bagToFill = EEPROM.read(0); //read the value from the first EEPROM byte. This will be 255 if a reset is needed
+int bagToFill = EEPROM.read(0); //read the value from the first EEPROM byte. This will be 255 if a reset is needed
 boolean resetBagNumber = false;     // flag to say the "reset bag number" switch has been pressed
 int numOfBags = 12;
 
@@ -112,7 +113,12 @@ uint32_t now = 0;
 
 uint32_t nextFillTime = 0;
 String fillTimeString() {
-    return  Time.timeStr(Time.now() + 86400*bDay + 3600*bHour + 60*bMin);
+    if (fsm_state_name == "Sampling") {
+        return Time.timeStr(nextFillTime);
+    }
+    else {
+        return  Time.timeStr(Time.now() + 86400*bDay + 3600*bHour + 60*bMin);
+    }
 }
 
 int nextFillDay = 0;
@@ -182,8 +188,8 @@ void setup() {
     
     
     Serial.begin(9600); // setup USB serial to computer
-	
-	display.setup();    //Sets up the OLED - e.g. I2C address, button DIOs etc.
+    
+    display.setup();    //Sets up the OLED - e.g. I2C address, button DIOs etc.
     rtcSync.setup();    //sets up the RTC - e.g. I2C address, etc. 
     
     splashScreen();
@@ -225,8 +231,8 @@ void setup() {
 }
 
 void loop() {
-	display.loop();     //button debouncer
-	rtcSync.loop();     //sets the RTC from the cloud if the time is missing.
+    display.loop();     //button debouncer
+    rtcSync.loop();     //sets the RTC from the cloud if the time is missing.
 
 switch (fsm_state) {
   
@@ -1115,7 +1121,7 @@ void fillBagIfConditionsMet(){
                     printToCard.printlnf(", %d" ,bagToFill);
                     
                     // Tell the console we're filling a bog - NO! CAN BE BLOCKING!
-                   // Particle.publish("Filling Bag", String::format("%d",bagToFill), PRIVATE);
+                    Particle.publish("Filling Bag", String::format("%d",bagToFill), PRIVATE);
                     
                     // update the bagToFill to say this bag is full - if the sampling is cancelled this bag is still considered
                     // "full" as it has been opened.

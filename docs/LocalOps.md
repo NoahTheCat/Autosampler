@@ -70,9 +70,9 @@ The screen will then revert to the default one at the top of this page.
 
 The sampler can only activate the valve for each bag once.  This means that once the sampler's counter gets to 12 (the max number of bags) it will stop.
 
-Once someone has put new sample bags in place the counter can be reset using the switch underneat the connector to the relays for the valves::
+Once someone has put new sample bags in place the counter can be reset using the switch underneat the connector to the relays for the valves:
 
-
+<img src="img/ResetBagNumber.png" width="450"/>
 
 Flick the switch to the ON position, then immediately back to OFF and the bag counter will reset to 1.
 
