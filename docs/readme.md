@@ -1,9 +1,3 @@
----
-title: Introduction
----
-
-
-
 # Introduction
 
 Instructions for air sampler
