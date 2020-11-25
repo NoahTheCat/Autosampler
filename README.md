@@ -24,13 +24,13 @@ For others, here's a simple installation using the online Particle code editor.
 
 - Log into your Particle code editor (build.particle.com)
 - Create a new app 
-- Add the libraries at the top of the file ()
+- In the online code editor click on the libraries tab and add the libraries at the top of the file <AutoSampler.cpp>
 - Replace the contents of the file that the editor creates with the code here (just copy & paste)
 - upload to you microcontroller
 
 
 ## Usage
-See [here]()
+See [https://noahthecat.github.io/Autosampler/](https://noahthecat.github.io/Autosampler/)
 
 ## License
 MIT Licence - use this however you like
