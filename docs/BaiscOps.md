@@ -4,7 +4,6 @@ nav_order: 2
 ---
 # Basic Operation
 
-Here are the simplest possible instructions for how to use the sampler
 1. Fill the sampler with empty bags
 2. Turn the power off then on again - this resets the sampler to fill from bag #1
 2. Set the fill repeat time (e.g. fill every 1hr), and start time (e.g. start in 1 day from now) using the [buttons on the device](link)
