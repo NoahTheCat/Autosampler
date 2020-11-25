@@ -1,1 +1,6 @@
 remote_theme: pmarsceill/just-the-docs
+
+# Aux links for the upper right navigation
+aux_links:
+  "Autosampler on GitHub":
+    - "//github.com/NoahTheCat/Autosampler"
