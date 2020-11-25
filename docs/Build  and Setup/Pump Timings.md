@@ -10,3 +10,4 @@ The timers that control how long the pumps flush the lines and then fill the bag
 By default they are set to a 10s flush and a 60s bag fill.  To change these update the desired times in milliseconds in the program code (lines 44 and 45) and then re-flash the device.
 
 <img src="../img/SetPumpTiming.png"  width="700" />
+
