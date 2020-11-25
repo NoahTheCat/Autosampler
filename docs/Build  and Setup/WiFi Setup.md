@@ -5,9 +5,9 @@ parent: Build and Setup
 
 # How to set up the WiFi connection
 
-The easiest way to get the device online is to set it up using the Particle app on an apple iOS device (iphone, iPad etc).
+The easiest way to get the device online is to set it up using the Particle app on an apple iOS device (iPhone, iPad etc).
 
-There is a way to make it work using a website for any phone/computer and that's on the plan, but it's not working right now.
+There is a way to make it work using a website for any phone/computer and that's on the todo list, but it's not started as yet.
 
 
 
