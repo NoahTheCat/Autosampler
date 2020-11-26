@@ -4,3 +4,4 @@ remote_theme: pmarsceill/just-the-docs
 aux_links:
   "Autosampler on GitHub":
     - "//github.com/NoahTheCat/Autosampler"
+theme: jekyll-theme-cayman
