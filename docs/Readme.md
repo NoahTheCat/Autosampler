@@ -1,6 +1,3 @@
----
-title: Introduction
----
 
 # Introduction
 
