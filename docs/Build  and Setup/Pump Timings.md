@@ -11,3 +11,5 @@ By default they are set to a 10s flush and a 60s bag fill.  To change these upda
 
 <img src="../img/SetPumpTiming.png"  width="700" />
 
+## Git Test
+
