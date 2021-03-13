@@ -1,3 +1,8 @@
+---
+Title: Reprogramming
+parent: Build and Setup
+---
+
 # Programming the Autosampler
 
 The easiest way to flash new code onto the Autosampler - e.g. if you want to change the pump timings - is to the the online programmer:

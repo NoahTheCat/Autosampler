@@ -15,4 +15,5 @@ By default they are set to a 10s flush and a 60s bag fill.  To change these upda
 
 ## How do I do this?
 
-1. Make sure the Microcontroller is online - i.e. it as happily flashing cyan.
+1. Make sure the Microcontroller is [online](../RemoteOps.md) - i.e. it is happily flashing cyan.
+2. Follow the instructions [here.](Flash new code.md)
