@@ -15,7 +15,7 @@ NOTE: you can take a single sample while a regular sequence is running so long a
 
 ## Connecting to the internet
 
-For instructions on how to set to the WiFi connection see [here](Build  and Setup/WiFi Setup.md)
+For instructions on how to setup the WiFi connection see [here](Build  and Setup/WiFi Setup.md)
 
 By default the sampler is normally DISCONNECTED from the internet, and the main LED should be pulsing white (it's a RGB LED so you can still see the other colors a bit).
 

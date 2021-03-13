@@ -11,5 +11,8 @@ By default they are set to a 10s flush and a 60s bag fill.  To change these upda
 
 <img src="../img/SetPumpTiming.png"  width="700" />
 
-## Git Test
 
+
+## How do I do this?
+
+1. Make sure the Microcontroller is online - i.e. it as happily flashing cyan.
