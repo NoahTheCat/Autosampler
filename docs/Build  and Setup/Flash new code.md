@@ -40,11 +40,12 @@ The Autosampler must be connected to the internet to be reprogrammed. (Instructi
 
 <u>Complie the code and send it to the Autosampler</u>
 
-3. Click the "Tick" symbol on the top left (circled green) to complie the code. This will take a minute or so.  If you made no mistakes you shuold get a `Code verified! Great work` message at the bottom.
+3. Click the "Tick" symbol on the top left (circled green) to complie the code. This will take a minute or so.  If you made no mistakes you should get a `Code verified! Great work` message at the bottom.
 
 4. Click the "Lightening" symbol on the top left to send the complied code to the Autosampler. This will also take a minute or so. 
 
 5. The AutoSampler should start flashing magenta as it recieved the update. once it has updated it will restart and be ready for use.
+
    <img src="../img/otaUpdate.gif" width="350:" />
 
    
