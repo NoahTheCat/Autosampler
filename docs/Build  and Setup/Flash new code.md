@@ -29,7 +29,9 @@ You can now make whatever changes you like.
 
 One you have made your changes you are ready to send the new code to the device.
 
-The Autosampler bust be connected to the internet to be reprogrammed. Instructions for how to do this are [here.](../RemoteOps.md)
+The Autosampler must be connected to the internet to be reprogrammed. (Instructions [here.)](../RemoteOps.md)
+
+<img src="../img/Reflash.png"  width="700" />
 
 <u>Select the device to re-program</u>
 
